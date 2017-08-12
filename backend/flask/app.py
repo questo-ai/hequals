@@ -31,9 +31,11 @@ def index():
 def select():
     if request.method == 'POST':
         repo = request.form['repo']
-        test.retrieve_commit_messages(user_inst)
-        test.retrieve_commit_files(user_inst)
-        return "generating..."
+        colls = test.retrieve_collaborators(repo)
+        comm_mess = test.retrieve_commit_messages(user_inst)
+        comm_files = test.retrieve_commit_files(user_inst)
+        return redirect("/showresults")
+
     repos = (test.retrieve_repos(user_inst))[0]
     return render_template('repos.html', repos=repos)
 
@@ -41,7 +43,7 @@ def select():
 def staticfile(path):
     return send_from_directory('static', path)
 
-@app.route('/showresults', methods=['GET', 'POST'])
+@app.route('/showresults', methods=['POST'])
 def results():
     return render_template('results.html', repo_name=repo_name)
 

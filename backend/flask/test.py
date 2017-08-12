@@ -27,6 +27,12 @@ def retrieve_repos(user_object_arg):
 
 	return all_repos_objects, repo_array
 
+def retrieve_collaborators(repo_object_arg):
+	collaborators_array = []
+	for coll in repo_object_arg.get_collaborators():
+		collaborators_array.append(coll)
+	return collaborators_array
+
 def retrieve_commit_messages(repo_object_arg):
 	commit_message_array = []
 	for x in repo_object_arg.get_commits(author=user):
