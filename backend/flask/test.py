@@ -43,8 +43,18 @@ def retrieve_commit_files(repo_object_arg):
 		print(x.files.contents_url)
 	return commit_filename_array
 
+def retrive_issues(repo_object_arg):
+	issues_dict = {}
+	for x in repo_object_arg.get_issues():
+		print(x)
+		issues_dict[x.title] = x.body
+
+	return issues_dict
+
 repo_obj, array = retrieve_repos(user)
-print(retrieve_commit_files(repo_obj[4]))
+#print(retrieve_commit_files(repo_obj[4]))
+
+print(retrive_issues(repo_obj[4]))
 
 string = ""
 

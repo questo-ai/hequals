@@ -1,55 +1,48 @@
 from flask import Flask, request, g, render_template, session, redirect, url_for
-from flask_github import GitHub
+from github import Github
+import github
+import test
 
 app = Flask(__name__)
-app.config['GITHUB_CLIENT_ID'] = '24e70a9e5b30650ce068'
-app.config['GITHUB_CLIENT_SECRET'] = 'a797a49f99771bf1e4dda9d63f2360a46ac1a9f1'
 
-@app.route('/login')
-def login():
-    return github.authorize()
-
-github = GitHub(app)
-
-@app.route('/callback', methods=['GET'])
-def authorized():
-    return request.args.get('code')
-
-'''
-    next_url = request.args.get('next') or url_for('index')
-    if oauth_token is None:
-        flash("Authorization failed.")
-        return redirect(next_url)
-
-    user = User.query.filter_by(github_access_token=oauth_token).first()
-    if user is None:
-        user = User(oauth_token)
-        db_session.add(user)
-
-    user.github_access_token = oauth_token
-    db_session.commit()
-    return redirect(next_url)
-
-def authorized():
-    print(token)
-    next_url = 'localhost:5000/index'
-    return ''''''
-'''
+repo_name = ""
 
 @app.route('/repo')
 def repo():
     repo_dict = github.get('repos/cenkalti/github-flask')
     return str(repo_dict)
 
+g = None
+user_inst = None
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        global g
+        g = Github(username, password)
+        global user_inst
+        user_inst = g.get_user()
+        return redirect("/repos")
     return render_template('index.html')
+
+@app.route('/repos', methods=['GET', 'POST'])
+def select():
+    if request.method == 'POST':
+        repo = request.form['repo']
+        test.retrieve_commit_messages(user_inst)
+        test.retrieve_commit_files(user_inst)
+        return "generating..."
+    repos = (test.retrieve_repos(user_inst))[1]
+    return render_template('repos.html', repos=repos)
 
 @app.route('/staticfile/<path:path>')
 def staticfile(path):
     return send_from_directory('static', path)
+
+@app.route('/showresults', methods=['GET', 'POST'])
+def results():
+    return render_template('results.html', repo_name=repo_name)
 
 app.run(debug=True, host="0.0.0.0", threaded=True)
