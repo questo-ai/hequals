@@ -34,7 +34,7 @@ def select():
         test.retrieve_commit_messages(user_inst)
         test.retrieve_commit_files(user_inst)
         return "generating..."
-    repos = (test.retrieve_repos(user_inst))[1]
+    repos = (test.retrieve_repos(user_inst))[0]
     return render_template('repos.html', repos=repos)
 
 @app.route('/staticfile/<path:path>')
