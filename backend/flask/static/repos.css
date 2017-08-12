@@ -1,5 +1,14 @@
-.customrow{
-	border: 2px solid #222;
+.custom-row{
+	border: 1px solid #666;
     border-radius: 5px;
-
+	padding: 0.4em;
+	font-size: 1.2em;
+	margin: 0.4em;
+}
+#owner-login{
+	font-size: 0.8em;
+	color: #555;
+}
+.radio.selected{
+    background-color: rgba(0,0,255,0.4);
 }
