@@ -23,7 +23,6 @@ def retrieve_repos(user_object_arg):
 
 	for repo in all_repos_objects:
 		#print(type(repo))
-		all_repos_objects[repo.numcommits] = 
 		repo_array.append(repo.name)
 		#print(repo.name)
 
