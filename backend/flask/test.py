@@ -4,7 +4,6 @@ from nltk.corpus import stopwords
 from googleapiclient import discovery
 from os.path import splitext
 from oauth2client.client import GoogleCredentials
-import base64
 
 # ARYAS OAUTH TOKEN
 g = Github("46658ee63b136199658e3a201ccbddec743bda00")
@@ -28,6 +27,12 @@ def retrieve_repos(user_object_arg):
 
 	return all_repos_objects, repo_array
 
+def retrieve_collaborators(repo_object_arg):
+	collaborators_array = []
+	for coll in repo_object_arg.get_collaborators():
+		collaborators_array.append(coll)
+	return collaborators_array
+
 def retrieve_commit_messages(repo_object_arg):
 	commit_message_array = []
 	for x in repo_object_arg.get_commits(author=user):
@@ -36,27 +41,13 @@ def retrieve_commit_messages(repo_object_arg):
 
 def retrieve_commit_files(repo_object_arg):
 	commit_filename_array = []
-	commit_filename_dict = {}
-	counter = 0
 	for x in repo_object_arg.get_commits(author=user):
 		#print(type(x))
 		#return False
 		#commit_filename_array.append(x.files.filename)
-		for file in x.files:
-			print("counter: ", counter)
-			if counter > 9:
-				return commit_filename_dict
-			# print(
-			# 	base64.b64decode(
-			# 		repo_object_arg.get_file_contents(file.filename).content
-			# 	)
-			# )
-			commit_filename_dict[file.filename] = base64.b64decode(
-					repo_object_arg.get_file_contents(file.filename).content
-				)
-			#print(x.files.contents_url)
-			counter += 1
-	return commit_filename_dict
+		print(x.files)
+		print(x.files.contents_url)
+	return commit_filename_array
 
 def retrive_issues(repo_object_arg):
 	issues_dict = {}
@@ -67,14 +58,14 @@ def retrive_issues(repo_object_arg):
 	return issues_dict
 
 repo_obj, array = retrieve_repos(user)
-files = retrieve_commit_files(repo_obj[3])
 #print(retrieve_commit_files(repo_obj[4]))
 
-#print(array)
+print(retrive_issues(repo_obj[4]))
 
 string = ""
+
 # ASSUMES THEY'VE CHOSEN A REPO AND WE KNOW WHAT INDEX IT IS
-for x in retrieve_commit_messages(repo_obj[3]):
+for x in retrieve_commit_messages(repo_obj[4]):
 	#print(x)
 	string += x
 
@@ -118,12 +109,11 @@ bant = "Fix some missing requires, globals, whitespace Change some http scripts 
 # PSEUDO CODE FOR THE IMPORT PARSING
 # LIBRARIES ARE KEYWORDS
 
-def get_library(codefile, codevalue):
+def get_library(codefile):
 	keywords = []
 
 	imports = {
 		'.py':'import',
-		'.pyx':'cimport',
 		'.swift':'import',
 		'.c':'include',
 		'.cpp':'include',
@@ -133,61 +123,30 @@ def get_library(codefile, codevalue):
 		'.js':'require'
 	}
 
-	_, ext = splitext(codefile)
-	if ext in imports.keys():
-		#print(ext)
-		search_statement = imports[ext]
-		counter = 0
-		for line in codevalue.split('\\n'):
-				if search_statement in line:
-					if ext == '.py' or '.pyx':
-						if len(line.split(' ')) > 2:
-							line = line.replace(search_statement, '')	
-							if 'from' in line:
-								# from x import y
-								line = line.split(' ')[1]
-							elif 'as' in line:
-								# import x as y
-								line = line.split(' ')[1]
-						elif len(line.split(' ')) == 2:
-							# import x	
+	with open(codefile) as code:
+		_, ext = splitext(codefile)
+		if ext in imports.keys():
+			search_statement = imports[ext]
+			counter = 0
+			for line in code:
+				if counter < 3:
+					if search_statement in line:
+						if ext == '.py':
+							line = line.strip('\n')
 							line = line.replace(search_statement, '')
-							line = line.strip(' ')
-
-					if '.' in line:
-						line = line.split('.')[0]
-					if line not in keywords:
+							if 'from' in line:
+								line = line.split()[1]
 						keywords.append(line)
-					#keywords.append(next(line, None))
-
-
-	# with open(codefile) as code:
-	# 	_, ext = splitext(codefile)
-	# 	if ext in imports.keys():
-	# 		search_statement = imports[ext]
-	# 		counter = 0
-	# 		for line in code:
-	# 			if counter < 3:
-	# 				if search_statement in line:
-	# 					if ext == '.py':
-	# 						line = line.strip('\n')
-	# 						line = line.replace(search_statement, '')
-	# 						if 'from' in line:
-	# 							line = line.split()[1]
-	# 					keywords.append(line)
-	# 				else:
-	# 					counter += 1
-	# 			else:
-	# 				pass
+					else:
+						counter += 1
+				else:
+					pass
 
 	return keywords
 
 #print(get_library('/Users/aryavohra/questo-backend/app.py'))
 
-#print(files)
 
-for x in files:
-	print(get_library(str(x), str(files[x])))
 
 
 

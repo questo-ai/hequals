@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Bootstrap core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="static/repos.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h2>Choose a repository</h2>
+    {% for repo in repos %}
+        <div class="custom-row row text-center">
+        	<div class="">
+        		{{repo.name}}
+        	</div>
+        </div>
+        <form method="post" action="">
+            <div class="radio-group">
+    {% for repo in repos %}
+        <div class="custom-row row view overlay hm-blue-light radio" name="repo" value= "{{ repo.name }}" >
+            <i class="fa fa-github" aria-hidden="true"></i>
+            {{repo.name}} <br>
+            <div id="owner-login">{{repo.owner.login}}</div>
+            <div id="owner-login">
+                <i class="fa fa-code-fork" aria-hidden="true"></i>
+                {{repo.forks_count}}
+            </div>
+         </div>
+    {% endfor %}
+            </div>
+            <div class="row text-center">
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 2em;">Next!</button>
+            </div>
+        </form>
+
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script> 
+        <script type="text/javascript">
+             $('.radio-group .radio').click(function(){
+                $(this).parent().find('.radio').removeClass('selected');
+                $(this).addClass('selected');
+                var val = $(this).attr('data-value');
+                // alert(val);
+                $(this).parent().find('input').val(val);
+            });
+        </script>
+</div>
+</body>
+</html>
