@@ -10,16 +10,10 @@
 <body>
 <div class="container">
     <h2>Choose a repository</h2>
-    {% for repo in repos %}
-        <div class="custom-row row text-center">
-        	<div class="">
-        		{{repo.name}}
-        	</div>
-        </div>
         <form method="post" action="">
             <div class="radio-group">
-    {% for repo in repos %}
-        <div class="custom-row row view overlay hm-blue-light radio" name="repo" value= "{{ repo.name }}" >
+        {% for repo in repos %}
+        <div class="custom-row row view overlay radio" name="repo" value= "{{ repo.name }}" >
             <i class="fa fa-github" aria-hidden="true"></i>
             {{repo.name}} <br>
             <div id="owner-login">{{repo.owner.login}}</div>
@@ -28,9 +22,10 @@
                 {{repo.forks_count}}
             </div>
          </div>
-    {% endfor %}
+        {% endfor %}
             </div>
             <div class="row text-center">
+                <input type="text" id="radio-value" name="repo" style="display: none;" />
                 <button type="submit" class="btn btn-primary" style="margin-bottom: 2em;">Next!</button>
             </div>
         </form>
@@ -40,9 +35,9 @@
              $('.radio-group .radio').click(function(){
                 $(this).parent().find('.radio').removeClass('selected');
                 $(this).addClass('selected');
-                var val = $(this).attr('data-value');
-                // alert(val);
-                $(this).parent().find('input').val(val);
+                var val = $(this).attr('value');
+                $('#radio-value').val(val);
+                alert($('#radio-value').val());
             });
         </script>
 </div>
