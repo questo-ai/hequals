@@ -9,8 +9,12 @@
 </head>
 <body>
 <div class="container">
-        <div class="row text-center">
-            <h2>Choose a repository</h2>
+    <h2>Choose a repository</h2>
+    {% for repo in repos %}
+        <div class="custom-row row text-center">
+        	<div class="">
+        		{{repo.name}}
+        	</div>
         </div>
         <form method="post" action="">
             <div class="radio-group">

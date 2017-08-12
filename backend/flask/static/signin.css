@@ -9,10 +9,15 @@ body {
   padding: 15px;
   margin: 0 auto;
 }
-.form-signin .form-signin-heading,
+.form-signin,
 .form-signin .checkbox {
   margin-bottom: 10px;
 }
+.form-signin-heading {
+  font-style: italic;
+  padding-bottom: 2em;
+}
+
 .form-signin .checkbox {
   font-weight: normal;
 }
