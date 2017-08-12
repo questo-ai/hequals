@@ -1,4 +1,4 @@
-from flask import Flask, request, g, session, redirect, url_for
+from flask import Flask, request, g, render_template, session, redirect, url_for
 from flask_github import GitHub
 
 app = Flask(__name__)
@@ -6,7 +6,6 @@ app.config['GITHUB_CLIENT_ID'] = '24e70a9e5b30650ce068'
 app.config['GITHUB_CLIENT_SECRET'] = 'a797a49f99771bf1e4dda9d63f2360a46ac1a9f1'
 
 @app.route('/login')
-@app.route('/')
 def login():
     return github.authorize()
 
@@ -41,4 +40,16 @@ def authorized():
 def repo():
     repo_dict = github.get('repos/cenkalti/github-flask')
     return str(repo_dict)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+    return render_template('index.html')
+
+@app.route('/staticfile/<path:path>')
+def staticfile(path):
+    return send_from_directory('static', path)
+
 app.run(debug=True, host="0.0.0.0", threaded=True)
