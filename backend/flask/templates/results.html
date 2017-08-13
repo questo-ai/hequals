@@ -7,11 +7,65 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    <link href="../static/results.css" rel="stylesheet">
   </head>
-      <h2 class="text-center">{{ repo_name }}</h2>
-  <div class="row">
-    <div class="col text-center">col</div>
-    <div class="col text-center">col</div>
+      <h2 class="text-center repo-name">Repository: {{ repo_name }}</h2>
+  <div class="row wrapper">
+    <div class="col large-column">
+      <div class="col-title text-center">Tasks</div>
+      {% for task in tasks %}
+      <div class="cell task" value={{loop.index0}}> 
+      <div class="row">
+        <div class="col-12 col-sm-auto">
+          <p class="task-title">{{task.name}}</p>
+            {%for keyword in task.keywords%}
+            <div class="tag blue">
+              {{keyword}}
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col large-column">
+      <div class="col-title text-center">Suited Candidates for {{selected_task.name}}</div>
+      {% for key, value in selected_task.score.items() %}
+      <div class="cell">
+        <div class="row">
+          <div class="col-3 col-sm-auto">
+            <img src="https://avatars1.githubusercontent.com/u/4346993?v=4&s=400" width="80px">
+          </div>
+          <div class="col-5 col-sm-auto" style="width: 100%;">
+            <p class="task-title" >{{key}}</p>
+            <p class="person-score" >{{value * 100}}% Suitable</p>
+          </div>
+          <div class="col-4 col-sm-auto vertical-center">
+             <div class="tag vlightblue">
+              Best fit
+            </div>
+            <div class="tag vlightblue">
+              openCV
+            </div>
+            <div class="tag vlightblue">
+              openCV
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script> 
+        <script type="text/javascript">
+             $('.task').click(function(){
+                var val = $(this).attr('value');
+                $(this).css('background-color','#CCC')
+                // alert(val);
+                window.location.href = '?index=' + val;
+            });
+        </script>
 
 </html>

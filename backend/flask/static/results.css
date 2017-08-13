@@ -1,0 +1,66 @@
+.large-column{
+	height: 80%;
+    margin: 2em 1em;
+   	border: 1px solid #DDD;
+    border-radius: 5px;
+	padding: 0.4em;
+	font-size: 1.2em;
+	color: #555;
+}
+.full-row{
+	height: 80vh;
+}
+.cell{
+	border: 0.4px solid #CCC;
+	margin: 0px;
+	background-color: #F2F2F2;
+	padding: 0.6em 1.2em;
+}
+.tag{
+	font-size: 0.7em;
+	padding: 0.2em 0.4em;
+	display: inline-block;
+	border-radius: 3px;
+}
+.blue{
+	background-color: #97F9F9;
+}
+.lightblue{
+	background-color: #A4DEF9;
+}
+.vlightblue{
+	background-color: #C1E0F7;
+}
+.lightpurple{
+	background-color: #CFBAE1;
+}
+.darkpurple{
+	background-color: #C59FC9;
+}
+.task-title{
+	margin: 0px;	
+}
+.task {
+	cursor: pointer;
+}
+.inline{
+	display: inline-block;
+}
+.vertical-center {
+	vertical-align:middle;
+}
+.person-score {
+	font-size: 0.8em;
+}
+.repo-name {
+	margin-top: 2em;
+	color: rgb(136, 136, 136);
+	font-size: 20px;
+	font-weight: 300;
+}
+.wrapper {
+	margin: 0 2em;
+}
+.col-title {
+	margin: 0.4em 0 0.8em 0;
+}

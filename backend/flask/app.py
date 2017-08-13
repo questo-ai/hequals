@@ -30,8 +30,8 @@ def index():
 @app.route('/repos', methods=['GET', 'POST'])
 def select():
     if request.method == 'POST':
-        print(request)
         repo_name = request.form['repo']
+        print(repo_name)
         colls = test.retrieve_collaborators(repo)
         comm_mess = test.retrieve_commit_messages(user_inst)
         comm_files = test.retrieve_commit_files(user_inst)

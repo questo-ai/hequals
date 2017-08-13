@@ -1,4 +1,36 @@
 <!DOCTYPE html>
 <html>
+	<body style="height: 100vh">
+		<div class="wrapper" style="position: absolute; top: 50%; left: 50%; margin: -100px 0px 0px -100px;">
+			<img style="" src="https://octodex.github.com/images/daftpunktocat-guy.gif" width="200px">
+			<p class="text-center" data-text="loading...">loading...</p>
+		</div>
+	</body>
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
 </html>
+<style type="text/css">
+	body{
+		background-color: #F7EF99;
+	}
+	.text-center {
+	    position: relative;
+	    color: #888;
+	    font-size: 2em
+	}
+	.text-center:before {
+	    content: attr(data-text);
+	    position: absolute;
+	    overflow: hidden;
+	    max-width: 7em;
+	    white-space: nowrap;
+	    color: #333;
+	    animation: loading 12s ease-in-out	;
+	}
+	@keyframes loading {
+	    0% {
+	        max-width: 0;
+	    }
+	}
+
+</style>
