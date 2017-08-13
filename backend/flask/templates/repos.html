@@ -13,9 +13,9 @@
         <form method="post" action="">
             <div class="radio-group">
         {% for repo in repos %}
-        <div class="custom-row row view overlay radio" name="repo" value= "{{ repo.name }}" >
-            <i class="fa fa-github" aria-hidden="true"></i>
-            {{repo.name}} <br>
+        <div class="custom-row row view overlay radio" name="repo" value= "{{ loop.index }}" >
+            
+            <div class="title"><i class="fa fa-github" aria-hidden="true"></i>{{' ' + repo.name}}</div> <br>
             <div id="owner-login">{{repo.owner.login}}</div>
             <div id="owner-login">
                 <i class="fa fa-code-fork" aria-hidden="true"></i>
@@ -37,7 +37,14 @@
                 $(this).addClass('selected');
                 var val = $(this).attr('value');
                 $('#radio-value').val(val);
-                alert($('#radio-value').val());
+                $('.btn').trigger('click');
+                $('.body').fadeOut("slow", function(){
+                    var div = $("<div id='foo'>test2</div>").hide();
+                    $(this).replaceWith(div);
+                    $('#foo').fadeIn("slow");
+                });
+                $('body').replaceWith('<!DOCTYPE html> <html>   <body style="height: 100vh">        <div class="wrapper" style="position: absolute; top: 50%; left: 50%; margin: -100px 0px 0px -100px;">           <img style="" src="https://octodex.github.com/images/daftpunktocat-guy.gif" width="200px">          <p class="text-center" data-text="loading...">loading...</p>        </div>  </body>         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">  </html> <style type="text/css">   body{       background-color: #F7EF99;  }   .text-center {      position: relative;         color: #888;        font-size: 2em  }   .text-center:before {       content: attr(data-text);       position: absolute;         overflow: hidden;       max-width: 7em;         white-space: nowrap;        color: #333;        animation: loading 12s ease-in-out  ;   }   @keyframes loading {        0% {            max-width: 0;       }   }  </style>')
+                // alert($('#radio-value').val());
             });
         </script>
 </div>

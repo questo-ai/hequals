@@ -3,12 +3,20 @@
     border-radius: 5px;
 	padding: 0.4em;
 	font-size: 1.2em;
-	margin: 0.4em;
+	margin: 0.9em;
+	cursor: pointer;
 }
 #owner-login{
 	font-size: 0.8em;
 	color: #555;
 }
 .radio.selected{
-    background-color: rgba(0,0,255,0.4);
+    background-color: #C1E0F7;
+}
+.container {
+	width: 60%;
+    margin: 0 auto;
+}
+.title {
+	font-size: 1.2em;
 }

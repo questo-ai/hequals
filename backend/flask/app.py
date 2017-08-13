@@ -53,13 +53,19 @@ def select():
 @app.route('/staticfile/<path:path>')
 def staticfile(path):
     return send_from_directory('static', path)
-
+class Task(object):
+    def __init__(self, name, keywords, score):
+        self.keywords = keywords
+        self.name = name
+        self.score = score
 @app.route('/showresults', methods=['GET', 'POST'])
 def results():
-    # Give this page issues with corresponding people suitable for the task
-
-    if request.args.get("repo_name") != None:
-        print("it exists")
-    return render_template('results.html', repo_name=request.args.get("repo_name"))
+    tasks = []
+    tasks.append(Task('Using Keras built-in model', ['OpenCV', 'C++', 'Swift'], {'aryavohra04': 0.8, 'tkato0909': 0.8}))
+    tasks.append(Task('Broken download links of the Windows GPU', ['OpenCV', 'C++', 'Swift'], {'tkato0909': 0.9, 'aryavohra04': 0.8, 'malayguy.123': 0.2}))
+    if request.args.get('index'):
+        users = []
+        return render_template('results.html', repo_name=request.args.get("repo_name"), tasks=tasks, selected_task=tasks[int(request.args.get('index'))])
+    return render_template('results.html', repo_name=request.args.get("repo_name"), tasks=tasks, selected_task=tasks[0])
 
 app.run(debug=True, host="0.0.0.0", threaded=True)
