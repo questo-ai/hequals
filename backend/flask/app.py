@@ -14,6 +14,7 @@ def repo():
 
 g = None
 user_inst = None
+results = None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -46,6 +47,10 @@ def select():
             task = test.task([k for k in keywords if k in t or b])
             test.scoreUsers(colls, task)
 
+        global results
+        results = task.score
+        print("printing score: ", task.score)
+
         url_to_redirct = "/showresults?repo_name=" + repos[repo_index].full_name
         return redirect(url_to_redirct)
     return render_template('repos.html', repos=repos)
@@ -60,6 +65,13 @@ def results():
 
     if request.args.get("repo_name") != None:
         print("it exists")
+        global results
+        colls = test.retrieve_collaborators(repos[repo_name])
+        for user in colls:
+            for u in results.keys():
+                if user.name == u:
+                    u = user
+                    
     return render_template('results.html', repo_name=request.args.get("repo_name"))
 
 app.run(debug=True, host="0.0.0.0", threaded=True)
