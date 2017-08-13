@@ -6,14 +6,6 @@ from os.path import splitext
 from oauth2client.client import GoogleCredentials
 import base64
 
-# ARYAS OAUTH TOKEN
-g = Github("46658ee63b136199658e3a201ccbddec743bda00")
-
-user = g.get_user()
-#print(user.name)
-#print(user.email)
-#print(user.login)
-
 credentials = GoogleCredentials.get_application_default()
 
 def retrieve_repos(user_object_arg):
@@ -22,9 +14,7 @@ def retrieve_repos(user_object_arg):
 	all_repos_objects = user_object_arg.get_repos()
 
 	for repo in all_repos_objects:
-		#print(type(repo))
 		repo_array.append(repo.name)
-		#print(repo.name)
 
 	return all_repos_objects, repo_array
 
@@ -34,55 +24,40 @@ def retrieve_collaborators(repo_object_arg):
 		collaborators_array.append(coll)
 	return collaborators_array
 
-def retrieve_commit_messages(repo_object_arg):
+def retrieve_commit_messages(repo_object_arg, user_object_arg):
 	commit_message_array = []
-	for x in repo_object_arg.get_commits(author=user):
+	user_object_arg.keyactivity = {}
+	for x in repo_object_arg.get_commits(author=user_object_arg):
 		commit_message_array.append(str(x.commit.message).replace('\n', ' '))
+		# print("hypo_keywords: ", user_object_arg.hypo_keywords)
+		det_keys = [k for k in user_object_arg.hypo_keywords if k in x.commit.message]
+		# print("det_keys:", det_keys)
+		for k in det_keys:
+			user_object_arg.keyactivity[k] = int(x.stats.total)
 	return commit_message_array
 
-def retrieve_commit_files(repo_object_arg):
+def retrieve_commit_files(repo_object_arg, user_object_arg):
 	commit_filename_array = []
 	commit_filename_dict = {}
 	counter = 0
-	for x in repo_object_arg.get_commits(author=user):
-		#print(type(x))
-		#return False
-		#commit_filename_array.append(x.files.filename)
+	for x in repo_object_arg.get_commits(author=user_object_arg):
 		for file in x.files:
-			print("counter: ", counter)
 			if counter > 9:
 				return commit_filename_dict
-			# print(
-			# 	base64.b64decode(
-			# 		repo_object_arg.get_file_contents(file.filename).content
-			# 	)
-			# )
-			commit_filename_dict[file.filename] = base64.b64decode(
-					repo_object_arg.get_file_contents(file.filename).content
-				)
-			#print(x.files.contents_url)
-			counter += 1
+			try:
+				commit_filename_dict[file.filename] = base64.b64decode(
+						repo_object_arg.get_file_contents(file.filename).content
+					)
+				counter += 1
+			except:
+				pass
 	return commit_filename_dict
 
-def retrive_issues(repo_object_arg):
+def retrieve_issues(repo_object_arg):
 	issues_dict = {}
 	for x in repo_object_arg.get_issues():
-		print(x)
 		issues_dict[x.title] = x.body
-
 	return issues_dict
-
-repo_obj, array = retrieve_repos(user)
-files = retrieve_commit_files(repo_obj[3])
-#print(retrieve_commit_files(repo_obj[4]))
-
-#print(array)
-
-string = ""
-# ASSUMES THEY'VE CHOSEN A REPO AND WE KNOW WHAT INDEX IT IS
-for x in retrieve_commit_messages(repo_obj[3]):
-	#print(x)
-	string += x
 
 service = discovery.build('language', 'v1beta1', credentials=credentials)
 
@@ -102,7 +77,6 @@ def createRequest(rawText):
         return request
 
 def tag(rawText):
-    # logger.debug('TAG CALLED')
     request = createRequest(rawText)
     response = request.execute()
     tokens = response["tokens"]
@@ -117,15 +91,8 @@ def tag(rawText):
 
     return posDict
 
-bant = "Fix some missing requires, globals, whitespace Change some http scripts to use host table instead of IP in requests Ensure resolveall only affects hostname-derived NetBlocks Document the tls.servername script-arg. See #949 Regen man page to include latest doc updates Expand CIDR documentation to cover IPv6 as well. Document the '*all' host discovery syntax."
-
-# print(tag(bant))
-
-# PSEUDO CODE FOR THE IMPORT PARSING
-# LIBRARIES ARE KEYWORDS
-
-def get_library(codefile, codevalue):
-	keywords = []
+def get_library(user, codefile, codevalue):
+	user.hypo_keywords = []
 
 	imports = {
 		'.py':'import',
@@ -139,12 +106,16 @@ def get_library(codefile, codevalue):
 		'.js':'require'
 	}
 
-	_, ext = splitext(codefile)
+	ext = '.' + codefile.split('.')[-1]
+
 	if ext in imports.keys():
-		#print(ext)
 		search_statement = imports[ext]
 		counter = 0
-		for line in codevalue.split('\\n'):
+		for line in codevalue.split(b'\n'):
+			line = line.decode()
+			if counter < 10:
+				counter += 1
+				line = line.replace('\n', '')
 				if search_statement in line:
 					if ext == '.py' or '.pyx':
 						if len(line.split(' ')) > 2:
@@ -162,51 +133,36 @@ def get_library(codefile, codevalue):
 
 					if '.' in line:
 						line = line.split('.')[0]
-					elif line not in keywords:
-						keywords.append(line)
+					elif line not in user.hypo_keywords:
+						user.hypo_keywords.append(line)
+			else:
+				return user.hypo_keywords
+	return user.hypo_keywords
 
 
-	# with open(codefile) as code:
-	# 	_, ext = splitext(codefile)
-	# 	if ext in imports.keys():
-	# 		search_statement = imports[ext]
-	# 		counter = 0
-	# 		for line in code:
-	# 			if counter < 3:
-	# 				if search_statement in line:
-	# 					if ext == '.py':
-	# 						line = line.strip('\n')
-	# 						line = line.replace(search_statement, '')
-	# 						if 'from' in line:
-	# 							line = line.split()[1]
-	# 					keywords.append(line)
-	# 				else:
-	# 					counter += 1
-	# 			else:
-	# 				pass
+class task(object):
+	def __init__(self, keywords):
+		self.keywords = keywords
+		self.score = {}
 
-	return keywords
+# score users for a hypothetical task
+def scoreUser(userKeywords, taskKeywords):
+	sharedElementCount = len(set(taskKeywords).intersection(userKeywords))
+	return sharedElementCount
 
-#print(get_library('/Users/aryavohra/questo-backend/app.py'))
-
-#print(files)
-
-for x in files:
-	print(get_library(str(x), str(files[x])))
-
-
-
-#retrieve_commit_messages(repo_obj)
-# for repo in user.get_repos():
-#     #for x in repo.get_branches():
-#     #	print(repo.get_branch(x.name).commit)
-#     #	print(x.name)
-#     	#print(repo.get_branch(x))
-#     print(repo.name)
-#     # for x in repo.get_commits(author=user):
-#     # 	print(x.commit.message)
-#     	# for y in x.get_comments():
-#     	# 	print(y)
-#      	# print(x)
-
-#    # repo.edit(has_wiki=False)
+def scoreUsers(users, task):
+	max = 0
+	for user in users:
+		print("keyactivity: ", user.keyactivity)
+		mean = (sum(user.keyactivity.values())/len(user.keyactivity.values()))
+		std_dev = sum([(x-mean)**2 for x in user.keyactivity.values()])/len(user.keyactivity.values())
+		user.keywords = []
+		for i, comm in enumerate(user.keyactivity.values()):
+			if comm > mean + std_dev:
+				user.keywords.extend(user.keyactivity.keys()[i])
+		score_calculated = scoreUser(user.keywords, task.keywords)
+		if score_calculated > max:
+			max = score_calculated
+		task.score[user.name] = score_calculated
+	for user in users:
+		task.score[user.name] = task.score[user.name] / max
