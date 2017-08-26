@@ -14,6 +14,8 @@ def repo():
 
 g = None
 user_inst = None
+results = None
+coll_arr = None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -46,7 +48,11 @@ def select():
             task = test.task([k for k in keywords if k in t or b])
             test.scoreUsers(colls, task)
 
-        url_to_redirct = "/showresults?repo_name=" + repos[repo_index].full_name
+        global results
+        results = task.score
+        print("printing score: ", task.score)
+
+        url_to_redirct = "/showresults?repo_name=" + repos[repo_index].full_name + '?colls=' + str(colls)
         return redirect(url_to_redirct)
     return render_template('repos.html', repos=repos)
 
@@ -60,12 +66,36 @@ class Task(object):
         self.score = score
 @app.route('/showresults', methods=['GET', 'POST'])
 def results():
+    global results
     tasks = []
-    tasks.append(Task('Using Keras built-in model', ['OpenCV', 'C++', 'Swift'], {'aryavohra04': 0.8, 'tkato0909': 0.8}))
-    tasks.append(Task('Broken download links of the Windows GPU', ['OpenCV', 'C++', 'Swift'], {'tkato0909': 0.9, 'aryavohra04': 0.8, 'malayguy.123': 0.2}))
+    colls = request.args.getlist("colls")
+    for user in colls:
+        for u in results.keys():
+            if user.name == u:
+                tasks.append(Task('Using Keras built-in model', user.hypo_keywords, results))
+                tasks.append(Task('Broken download links of the Windows GPU', ['.net', 'networking', 'nvidia-CUDA'], {'tkato0909': 0.974, 'aryavohra04': 0.823, 'superspy.827': 0.214}))
+                return render_template('results.html', repo_name='aryavohra04/questo-backend', tasks=tasks, selected_task=tasks[0])
     if request.args.get('index'):
         users = []
-        return render_template('results.html', repo_name=request.args.get("repo_name"), tasks=tasks, selected_task=tasks[int(request.args.get('index'))])
-    return render_template('results.html', repo_name=request.args.get("repo_name"), tasks=tasks, selected_task=tasks[0])
+        tasks.append(Task('Using Keras built-in model', ['Python3', 'Keras', 'machine-learning'], {'karinawalker': 0.744, 'aryavohra04': 0.323, 'superspy.827': 0.214}))
+        tasks.append(Task('Redesign the iOS page for question answering.', ['Swift', 'Object-C', 'iOS'], {'tkato0909': 0.974, 'superspy.827': 0.823, 'aryavohra04': 0.741}))
+        userkeywords=[[['Python', 'PHP', 'machine-learning', 'tensorflow'],
+                        ['C++', 'Java', 'Keras', 'iOS'],
+                        ['Python', 'javascript', 'node.js', 'JSON']
+                        ], [['Swift', 'iOS', 'Keras', 'CUDA'],
+                        ['Python', 'Swift', 'node.js', 'JSON'],
+                        ['C++', 'Java', 'Keras', 'iOS'],
+                        ]]
+        prof=[['https://avatars.githubusercontent.com/u/23270560?size=120','https://avatars.githubusercontent.com/u/8716483?size=100','https://avatars1.githubusercontent.com/u/6974757?v=4&s=400'], ['https://avatars2.githubusercontent.com/u/8716434?v=4&s=460', 'https://avatars1.githubusercontent.com/u/6974757?v=4&s=400', 'https://avatars.githubusercontent.com/u/8716483?size=100']]
+        return render_template('results.html', repo_name='aryavohra04/questo-backend', tasks=tasks, selected_task=tasks[int(request.args.get('index'))], userkeywords=userkeywords[int(request.args.get('index'))], prof=prof[int(request.args.get('index'))])
+        # return render_template('results.html', repo_name=request.args.get("repo_name"), tasks=tasks, selected_task=tasks[int(request.args.get('index'))])
+    tasks.append(Task('Using Keras built-in model', ['Python3', 'Keras', 'machine-learning', 'tensorflow'], {'karinawalker': 0.744, 'aryavohra04': 0.323, 'superspy.827': 0.214}))
+    tasks.append(Task('Redesign the iOS page for question answering.', ['Swift', 'Object-C', 'iOS'], {'tkato0909': 0.974, 'superspy.827': 0.823, 'aryavohra04': 0.741}))
+    prof=[['https://avatars.githubusercontent.com/u/23270560?size=120','https://avatars.githubusercontent.com/u/8716483?size=100','https://avatars1.githubusercontent.com/u/6974757?v=4&s=400'], ['https://avatars2.githubusercontent.com/u/8716434?v=4&s=460', 'https://avatars1.githubusercontent.com/u/6974757?v=4&s=400', 'https://avatars.githubusercontent.com/u/8716483?size=100']]
+    return render_template('results.html', repo_name='aryavohra04/questo-backend', tasks=tasks, selected_task=tasks[0], userkeywords=[['Python', 'PHP', 'machine-learning', 'tensorflow'],
+                                                                                                                                        ['C++', 'Java', 'Keras', 'iOS'],
+                                                                                                                                        ['Python', 'javascript', 'node.js', 'JSON']
+                                                                                                                                        ], prof=prof[0])
+
 
 app.run(debug=True, host="0.0.0.0", threaded=True)

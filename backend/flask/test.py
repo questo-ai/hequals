@@ -29,9 +29,7 @@ def retrieve_commit_messages(repo_object_arg, user_object_arg):
 	user_object_arg.keyactivity = {}
 	for x in repo_object_arg.get_commits(author=user_object_arg):
 		commit_message_array.append(str(x.commit.message).replace('\n', ' '))
-		# print("hypo_keywords: ", user_object_arg.hypo_keywords)
 		det_keys = [k for k in user_object_arg.hypo_keywords if k in x.commit.message]
-		# print("det_keys:", det_keys)
 		for k in det_keys:
 			user_object_arg.keyactivity[k] = int(x.stats.total)
 	return commit_message_array
@@ -130,11 +128,11 @@ def get_library(user, codefile, codevalue):
 							# import x	
 							line = line.replace(search_statement, '')
 							line = line.strip(' ')
-
 					if '.' in line:
 						line = line.split('.')[0]
 					elif line not in user.hypo_keywords:
-						user.hypo_keywords.append(line)
+						if len(line) > 2:
+							user.hypo_keywords.append(line)
 			else:
 				return user.hypo_keywords
 	return user.hypo_keywords
@@ -153,16 +151,22 @@ def scoreUser(userKeywords, taskKeywords):
 def scoreUsers(users, task):
 	max = 0
 	for user in users:
-		print("keyactivity: ", user.keyactivity)
-		mean = (sum(user.keyactivity.values())/len(user.keyactivity.values()))
-		std_dev = sum([(x-mean)**2 for x in user.keyactivity.values()])/len(user.keyactivity.values())
-		user.keywords = []
-		for i, comm in enumerate(user.keyactivity.values()):
-			if comm > mean + std_dev:
-				user.keywords.extend(user.keyactivity.keys()[i])
-		score_calculated = scoreUser(user.keywords, task.keywords)
-		if score_calculated > max:
-			max = score_calculated
-		task.score[user.name] = score_calculated
+		try:
+			mean = (sum(user.keyactivity.values())/len(user.keyactivity.values()))
+			std_dev = sum([(x-mean)**2 for x in user.keyactivity.values()])/len(user.keyactivity.values())
+			user.keywords = []
+			for i, comm in enumerate(user.keyactivity.values()):
+				if comm > mean + std_dev:
+					user.keywords.extend(user.keyactivity.keys()[i])
+			score_calculated = scoreUser(user.keywords, task.keywords)
+			if score_calculated > max:
+				max = score_calculated
+			task.score[user.name] = score_calculated
+		except ZeroDivisionError:
+			pass
+
 	for user in users:
-		task.score[user.name] = task.score[user.name] / max
+		if max != 0:
+			task.score[user.name] = task.score[user.name] / max
+		else:
+			pass
