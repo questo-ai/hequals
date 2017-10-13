@@ -49,8 +49,8 @@ def select():
             test.scoreUsers(colls, task)
 
         global results
-        results = task.score
-        print("printing score: ", task.score)
+        # results = task.score
+        # print("printing score: ", task.score)
 
         url_to_redirct = "/showresults?repo_name=" + repos[repo_index].full_name + '?colls=' + str(colls)
         return redirect(url_to_redirct)

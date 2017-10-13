@@ -29,9 +29,9 @@ def retrieve_commit_messages(repo_object_arg, user_object_arg):
 	user_object_arg.keyactivity = {}
 	for x in repo_object_arg.get_commits(author=user_object_arg):
 		commit_message_array.append(str(x.commit.message).replace('\n', ' '))
-		det_keys = [k for k in user_object_arg.hypo_keywords if k in x.commit.message]
-		for k in det_keys:
-			user_object_arg.keyactivity[k] = int(x.stats.total)
+		# det_keys = [k for k in user_object_arg.hypo_keywords if k in x.commit.message]
+		# for k in det_keys:
+			# user_object_arg.keyactivity[k] = int(x.stats.total)
 	return commit_message_array
 
 def retrieve_commit_files(repo_object_arg, user_object_arg):
